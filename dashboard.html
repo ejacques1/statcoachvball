@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - StatCoach Volleyball</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6, #ef4444);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.875rem;
+        }
+
+        .team-name {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .logout-btn {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .logout-btn:hover {
+            color: #ef4444;
+        }
+
+        /* Main Content */
+        .main {
+            padding: 2rem 0;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-subtitle {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #ef4444);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            box-shadow: none;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #f3f4f6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card:nth-child(1)::before {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .stat-card:nth-child(2)::before {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .stat-card:nth-child(3)::before {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .stat-card:nth-child(4)::before {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .stat-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.6;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-detail {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .trend-positive {
+            color: #10b981;
+        }
+
+        .trend-negative {
+            color: #ef4444;
+        }
+
+        .trend-neutral {
+            color: #6b7280;
+        }
+
+        /* Content Sections */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .games-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #f3f4f6;
+        }
+
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .section-content {
+            padding: 0;
+        }
+
+        /* Games Table */
+        .games-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .games-table th {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .games-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.875rem;
+        }
+
+        .games-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .opponent-info {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .game-date {
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+
+        .metric-value {
+            font-weight: 600;
+        }
+
+        .action-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+
+        .action-link:hover {
+            color: #1d4ed8;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .insights-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #f3f4f6;
+        }
+
+        .insights-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .insight-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .insight-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .insight-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .insight-value {
+            font-size: 0.875rem;
+            color: #1a1a1a;
+            line-height: 1.4;
+        }
+
+        /* Performance Chart */
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #f3f4f6;
+            margin-bottom: 2rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: #6b7280;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .empty-description {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-actions {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .games-table {
+                font-size: 0.75rem;
+            }
+
+            .games-table th,
+            .games-table td {
+                padding: 0.75rem;
+            }
+
+            .nav-user {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 0.5rem;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="/" class="logo">
+                <div class="logo-icon">🏐</div>
+                StatCoach Volleyball
+            </a>
+            <div class="nav-user">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Coach Thompson</div>
+                    <div class="team-name" id="teamName">State University Volleyball</div>
+                </div>
+                <a href="#" class="logout-btn" onclick="handleLogout()">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Team Dashboard</h1>
+                <p class="dashboard-subtitle">Track your team's performance and analyze game trends</p>
+                
+                <div class="dashboard-actions">
+                    <a href="/" class="btn">
+                        <span>📊</span>
+                        New Analysis
+                    </a>
+                    <button class="btn btn-secondary" onclick="exportData()">
+                        <span>📥</span>
+                        Export Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Season Average - Kill Efficiency</span>
+                        <div class="stat-icon">🏐</div>
+                    </div>
+                    <div class="stat-value" id="avgKillEff">42.1%</div>
+                    <div class="stat-detail">Across 8 games analyzed</div>
+                    <div class="stat-trend trend-positive">
+                        <span>↗</span>
+                        <span>+3.2% from last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Season Average - Aces Per Set</span>
+                        <div class="stat-icon">🎯</div>
+                    </div>
+                    <div class="stat-value" id="avgAces">1.8</div>
+                    <div class="stat-detail">Target: 2.0+ per set</div>
+                    <div class="stat-trend trend-neutral">
+                        <span>→</span>
+                        <span>Steady performance</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Season Average - Reception Errors</span>
+                        <div class="stat-icon">⚠️</div>
+                    </div>
+                    <div class="stat-value" id="avgReceptionErrors">2.1</div>
+                    <div class="stat-detail">Per set (lower is better)</div>
+                    <div class="stat-trend trend-negative">
+                        <span>↗</span>
+                        <span>+0.4 from last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Season Average - Blocks Per Set</span>
+                        <div class="stat-icon">🛡️</div>
+                    </div>
+                    <div class="stat-value" id="avgBlocks">2.3</div>
+                    <div class="stat-detail">Strong net defense</div>
+                    <div class="stat-trend trend-positive">
+                        <span>↗</span>
+                        <span>+0.7 from last month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Trend Chart -->
+            <div class="chart-container">
+                <h3 class="section-title" style="margin-bottom: 1rem;">Performance Trends</h3>
+                <canvas id="performanceChart" width="400" height="150"></canvas>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Games Table -->
+                <div class="games-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Games</h2>
+                        <span class="stat-detail">8 games analyzed</span>
+                    </div>
+                    <div class="section-content">
+                        <table class="games-table" id="gamesTable">
+                            <thead>
+                                <tr>
+                                    <th>Opponent</th>
+                                    <th>Kill Eff.</th>
+                                    <th>Aces/Set</th>
+                                    <th>Rec. Errors</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Sample Data - will be replaced with real data -->
+                                <tr>
+                                    <td>
+                                        <div class="opponent-info">West Coast University</div>
+                                        <div class="game-date">March 15, 2025</div>
+                                    </td>
+                                    <td class="metric-value">45.2%</td>
+                                    <td class="metric-value">2.3</td>
+                                    <td class="metric-value">1.7</td>
+                                    <td>
+                                        <a href="#" class="action-link">View Analysis</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="opponent-info">Mountain State College</div>
+                                        <div class="game-date">March 12, 2025</div>
+                                    </td>
+                                    <td class="metric-value">38.1%</td>
+                                    <td class="metric-value">1.3</td>
+                                    <td class="metric-value">2.8</td>
+                                    <td>
+                                        <a href="#" class="action-link">View Analysis</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="opponent-info">Central Valley Tech</div>
+                                        <div class="game-date">March 8, 2025</div>
+                                    </td>
+                                    <td class="metric-value">43.7%</td>
+                                    <td class="metric-value">1.9</td>
+                                    <td class="metric-value">2.1</td>
+                                    <td>
+                                        <a href="#" class="action-link">View Analysis</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Current Focus -->
+                    <div class="insights-card">
+                        <h3 class="insights-title">Current Focus Areas</h3>
+                        
+                        <div class="insight-item">
+                            <div class="insight-label">Primary Focus</div>
+                            <div class="insight-value">Reception consistency - errors above target range</div>
+                        </div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-label">Secondary Focus</div>
+                            <div class="insight-value">Serving aggression - increase ace production</div>
+                        </div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-label">Strength to Maintain</div>
+                            <div class="insight-value">Net defense - block production trending up</div>
+                        </div>
+                    </div>
+
+                    <!-- Research Insights -->
+                    <div class="insights-card">
+                        <h3 class="insights-title">Research Insights</h3>
+                        
+                        <div class="insight-item">
+                            <div class="insight-label">Biggest Impact</div>
+                            <div class="insight-value">Each service ace increases win probability by 33.8%</div>
+                        </div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-label">Biggest Risk</div>
+                            <div class="insight-value">Each reception error reduces win probability by 24.3%</div>
+                        </div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-label">Key Finding</div>
+                            <div class="insight-value">Quality over quantity - fewer, efficient attacks win more</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Supabase - you'll need to add your actual Supabase URL and key
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        // Uncomment when you have Supabase set up
+        // const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load user data and games
+            await loadUserData();
+            await loadGames();
+            createPerformanceChart();
+        });
+
+        async function loadUserData() {
+            // TODO: Replace with actual Supabase user data loading
+            // const { data: { user } } = await supabase.auth.getUser();
+            // if (user) {
+            //     document.getElementById('userName').textContent = user.user_metadata.coach_name || 'Coach';
+            //     document.getElementById('teamName').textContent = user.user_metadata.team_name || 'Team Name';
+            // }
+        }
+
+        async function loadGames() {
+            // TODO: Replace with actual Supabase games loading
+            // const { data: games, error } = await supabase
+            //     .from('games')
+            //     .select('*')
+            //     .order('game_date', { ascending: false });
+            
+            // if (games && games.length > 0) {
+            //     displayGames(games);
+            //     calculateSeasonStats(games);
+            // }
+        }
+
+        function displayGames(games) {
+            const tbody = document.querySelector('#gamesTable tbody');
+            tbody.innerHTML = '';
+
+            games.forEach(game => {
+                const killEff = game.kill_attempts > 0 ? (game.total_kills / game.kill_attempts * 100).toFixed(1) : '0.0';
+                const acesPerSet = game.total_sets > 0 ? (game.service_aces / game.total_sets).toFixed(1) : '0.0';
+                const errorsPerSet = game.total_sets > 0 ? (game.reception_errors / game.total_sets).toFixed(1) : '0.0';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="opponent-info">${game.opponent}</div>
+                        <div class="game-date">${new Date(game.game_date).toLocaleDateString()}</div>
+                    </td>
+                    <td class="metric-value">${killEff}%</td>
+                    <td class="metric-value">${acesPerSet}</td>
+                    <td class="metric-value">${errorsPerSet}</td>
+                    <td>
+                        <a href="#" class="action-link" onclick="viewGameAnalysis('${game.id}')">View Analysis</a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function calculateSeasonStats(games) {
+            if (games.length === 0) return;
+
+            let totalKills = 0, totalAttempts = 0, totalAces = 0, totalSets = 0, totalReceptionErrors = 0, totalBlocks = 0;
+
+            games.forEach(game => {
+                totalKills += game.total_kills || 0;
+                totalAttempts += game.kill_attempts || 0;
+                totalAces += game.service_aces || 0;
+                totalSets += game.total_sets || 1;
+                totalReceptionErrors += game.reception_errors || 0;
+                totalBlocks += game.total_blocks || 0;
+            });
+
+            const avgKillEff = totalAttempts > 0 ? (totalKills / totalAttempts * 100).toFixed(1) : '0.0';
+            const avgAces = totalSets > 0 ? (totalAces / totalSets).toFixed(1) : '0.0';
+            const avgReceptionErrors = totalSets > 0 ? (totalReceptionErrors / totalSets).toFixed(1) : '0.0';
+            const avgBlocks = totalSets > 0 ? (totalBlocks / totalSets).toFixed(1) : '0.0';
+
+            document.getElementById('avgKillEff').textContent = avgKillEff + '%';
+            document.getElementById('avgAces').textContent = avgAces;
+            document.getElementById('avgReceptionErrors').textContent = avgReceptionErrors;
+            document.getElementById('avgBlocks').textContent = avgBlocks;
+        }
+
+        function createPerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            // Sample data - replace with actual game data
+            const chartData = {
+                labels: ['Game 1', 'Game 2', 'Game 3', 'Game 4', 'Game 5', 'Game 6', 'Game 7', 'Game 8'],
+                datasets: [
+                    {
+                        label: 'Kill Efficiency (%)',
+                        data: [38.2, 42.1, 39.8, 45.2, 41.6, 43.7, 38.1, 45.2],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    },
+                    {
+                        label: 'Aces Per Set',
+                        data: [1.3, 1.8, 1.5, 2.3, 1.9, 1.9, 1.3, 2.3],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: false,
+                        yAxisID: 'y1'
+                    }
+                ]
+            };
+
+            new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            max: 50,
+                            title: {
+                                display: true,
+                                text: 'Kill Efficiency (%)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            max: 3,
+                            title: {
+                                display: true,
+                                text: 'Aces Per Set'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                }
+            });
+        }
+
+        function viewGameAnalysis(gameId) {
+            // TODO: Navigate to specific game analysis
+            alert('Game analysis view - to be implemented');
+        }
+
+        function exportData() {
+            // TODO: Export functionality
+            alert('Export functionality - to be implemented');
+        }
+
+        async function handleLogout() {
+            try {
+                // TODO: Replace with actual Supabase logout
+                // await supabase.auth.signOut();
+                
+                // Simulate logout
+                alert('Logging out...');
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Auth state management
+        // supabase.auth.onAuthStateChange((event, session) => {
+        //     if (event === 'SIGNED_OUT' || !session) {
+        //         window.location.href = '/login.html';
+        //     }
+        // });
+    </script>
+</body>
+</html>
