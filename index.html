@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StatCoach Volleyball - Research-Backed Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -75,6 +76,8 @@
             font-weight: 500;
             cursor: pointer;
             transition: color 0.2s;
+            background: none;
+            border: none;
         }
 
         .nav-link:hover {
@@ -738,6 +741,22 @@
             text-align: center;
         }
 
+        /* Success Message */
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero h1 {
@@ -848,8 +867,8 @@
                 StatCoach Volleyball
             </div>
             <div class="nav-links">
-                <a href="#" class="nav-link" onclick="showLogin()">Login</a>
-                <a href="#" class="btn" onclick="showSignup()">Get Started</a>
+                <a href="/login.html" class="nav-link">Login</a>
+                <a href="/signup.html" class="btn">Sign Up</a>
             </div>
         </nav>
     </header>
@@ -947,6 +966,11 @@
                     </div>
                     
                     <div class="form-body">
+                        <!-- Success Message -->
+                        <div class="success-message" id="saveSuccess">
+                            Game saved successfully!
+                        </div>
+
                         <!-- Match Info Section -->
                         <div class="form-section">
                             <div class="section-divider">
@@ -958,11 +982,11 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Opponent</label>
-                                    <input type="text" class="form-input" id="opponent" placeholder="Team name">
+                                    <input type="text" class="form-input" name="opponent" id="opponent" placeholder="Team name">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Date</label>
-                                    <input type="date" class="form-input" id="gameDate">
+                                    <input type="date" class="form-input" name="gameDate" id="gameDate">
                                 </div>
                             </div>
                         </div>
@@ -978,11 +1002,11 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Total Kills</label>
-                                    <input type="number" class="form-input" id="totalKills" min="0" placeholder="0">
+                                    <input type="number" class="form-input" name="totalKills" id="totalKills" min="0" placeholder="0">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Kill Attempts</label>
-                                    <input type="number" class="form-input" id="killAttempts" min="0" placeholder="0">
+                                    <input type="number" class="form-input" name="killAttempts" id="killAttempts" min="0" placeholder="0">
                                 </div>
                             </div>
                         </div>
@@ -998,11 +1022,11 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Service Aces</label>
-                                    <input type="number" class="form-input" id="serviceAces" min="0" placeholder="0">
+                                    <input type="number" class="form-input" name="serviceAces" id="serviceAces" min="0" placeholder="0">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Service Errors</label>
-                                    <input type="number" class="form-input" id="serviceErrors" min="0" placeholder="0">
+                                    <input type="number" class="form-input" name="serviceErrors" id="serviceErrors" min="0" placeholder="0">
                                 </div>
                             </div>
                         </div>
@@ -1018,11 +1042,11 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Total Blocks</label>
-                                    <input type="number" class="form-input" id="totalBlocks" min="0" placeholder="0">
+                                    <input type="number" class="form-input" name="totalBlocks" id="totalBlocks" min="0" placeholder="0">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Digs</label>
-                                    <input type="number" class="form-input" id="digs" min="0" placeholder="0">
+                                    <input type="number" class="form-input" name="digs" id="digs" min="0" placeholder="0">
                                 </div>
                             </div>
                         </div>
@@ -1038,11 +1062,11 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Reception Errors</label>
-                                    <input type="number" class="form-input" id="receptionErrors" min="0" placeholder="0">
+                                    <input type="number" class="form-input" name="receptionErrors" id="receptionErrors" min="0" placeholder="0">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Total Sets Played</label>
-                                    <input type="number" class="form-input" id="totalSets" min="1" max="5" placeholder="3">
+                                    <input type="number" class="form-input" name="totalSets" id="totalSets" min="1" max="5" placeholder="3">
                                 </div>
                             </div>
                         </div>
@@ -1126,7 +1150,7 @@
                 </div>
             </div>
             
-            <button class="prompt-cta" onclick="showSignup()">
+            <button class="prompt-cta" onclick="window.location.href='/signup.html'">
                 Create Free Account
             </button>
         </div>
@@ -1140,8 +1164,41 @@
     </footer>
 
     <script>
-        // Global state
+        // Initialize Supabase (add your real keys)
+        const supabase = window.supabase.createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY');
         let currentUser = null;
+
+        // Check if user is logged in
+        supabase.auth.onAuthStateChange((event, session) => {
+            currentUser = session?.user || null;
+            updateNavForUser();
+        });
+
+        function updateNavForUser() {
+            const navLinks = document.querySelector('.nav-links');
+            if (currentUser) {
+                navLinks.innerHTML = `
+                    <a href="/dashboard.html" class="nav-link">Dashboard</a>
+                    <button onclick="handleLogout()" class="nav-link">Logout</button>
+                `;
+            } else {
+                navLinks.innerHTML = `
+                    <a href="/login.html" class="nav-link">Login</a>
+                    <a href="/signup.html" class="btn">Sign Up</a>
+                `;
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                // User will be automatically updated via onAuthStateChange
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Error logging out');
+            }
+        }
 
         // Utility functions
         function scrollToAnalysis() {
@@ -1153,11 +1210,41 @@
         }
 
         function showLogin() {
-            alert('Login functionality - redirect to login.html');
+            window.location.href = '/login.html';
         }
 
         function showSignup() {
-            alert('Signup functionality - redirect to signup.html');
+            window.location.href = '/signup.html';
+        }
+
+        // Save game to database
+        async function saveGameToDatabase(stats, insights) {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) return;
+
+                const response = await fetch('/api/save-game', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        gameData: stats,
+                        analysisData: insights,
+                        userToken: session.access_token
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('Game saved successfully');
+                    // Show success message
+                    const successMsg = document.getElementById('saveSuccess');
+                    successMsg.classList.add('show');
+                    setTimeout(() => {
+                        successMsg.classList.remove('show');
+                    }, 3000);
+                }
+            } catch (error) {
+                console.error('Failed to save game:', error);
+            }
         }
 
         // Form submission handler
@@ -1200,6 +1287,11 @@
                 
                 // Display results
                 displayResults(stats, metrics, insights);
+                
+                // Save game for logged-in users
+                if (currentUser) {
+                    await saveGameToDatabase(stats, insights);
+                }
                 
                 // Show account prompt if not logged in
                 if (!currentUser) {
