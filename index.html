@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StatCoach Volleyball - Research-Backed Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6, #ef4444);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #1a1a1a;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #ef4444);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+        }
+
+        .btn-secondary:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: white;
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(239, 68, 68, 0.03) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .hero-badge i {
+            margin-right: 0.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #1a1a1a 0%, #3b82f6 50%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: #6b7280;
+            margin-bottom: 3rem;
+            line-height: 1.7;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta {
+            margin-bottom: 3rem;
+        }
+
+        .hero-cta .btn {
+            font-size: 1.1rem;
+            padding: 1rem 2rem;
+            margin-right: 1rem;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            padding: 5rem 0;
+            background: #fafafa;
+        }
+
+        .section-header {
+            text-center;
+            max-width: 600px;
+            margin: 0 auto 4rem auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #6b7280;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #f3f4f6;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .benefit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #3b82f6, #ef4444);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .benefit-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .benefit-card:nth-child(1) .benefit-icon {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .benefit-card:nth-child(2) .benefit-icon {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .benefit-card:nth-child(3) .benefit-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .benefit-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .benefit-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .benefit-link {
+            color: #3b82f6;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .benefit-link:hover {
+            color: #1d4ed8;
+        }
+
+        .benefit-link i {
+            margin-left: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .benefit-link:hover i {
+            transform: translateX(3px);
+        }
+
+        /* Analysis Section */
+        .analysis {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .analysis-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .analysis-form {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .form-body {
+            padding: 2.5rem;
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-divider {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 16px;
+            color: white;
+        }
+
+        .section-title-sm {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #f3f4f6;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6, #ef4444);
+            color: white;
+            border: none;
+            padding: 1.25rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .form-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3);
+        }
+
+        .form-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Section */
+        .results {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .results-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .game-summary {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-info h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-info p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .summary-id {
+            text-align: right;
+        }
+
+        .summary-id .label {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-id .value {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #f3f4f6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .metric-card:nth-child(1)::before {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .metric-card:nth-child(2)::before {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .metric-card:nth-child(3)::before {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .metric-card:nth-child(4)::before {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .metric-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.6;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-detail {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .insights-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .insights-header {
+            background: linear-gradient(135deg, #3b82f6, #ef4444);
+            color: white;
+            padding: 2rem;
+        }
+
+        .insights-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .insights-header h3 i {
+            margin-right: 0.75rem;
+        }
+
+        .insights-header p {
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        .insights-body {
+            padding: 2.5rem;
+        }
+
+        .insights-content h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .insights-content h4:first-child {
+            margin-top: 0;
+        }
+
+        .insights-content p {
+            color: #6b7280;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .insights-content ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .insights-content li {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        /* Account Prompt */
+        .account-prompt {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #3b82f6, #ef4444);
+            color: white;
+            text-align: center;
+            display: none;
+        }
+
+        .account-prompt.show {
+            display: block;
+        }
+
+        .account-prompt h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .account-prompt .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .prompt-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .prompt-feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .prompt-feature i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .prompt-feature h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .prompt-feature p {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .prompt-cta {
+            background: white;
+            color: #3b82f6;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .prompt-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: #9ca3af;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .game-summary {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .prompt-features {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .hero-cta .btn {
+                display: block;
+                margin-bottom: 1rem;
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .hero {
+                padding: 3rem 0;
+            }
+
+            .analysis {
+                padding: 3rem 0;
+            }
+
+            .results {
+                padding: 3rem 0;
+            }
+
+            .form-body {
+                padding: 1.5rem;
+            }
+
+            .insights-body {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">
+                <div class="logo-icon">🏐</div>
+                StatCoach Volleyball
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link" onclick="showLogin()">Login</a>
+                <a href="#" class="btn" onclick="showSignup()">Get Started</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i>🏛️</i>
+                    Backed by NCAA Division I Statistical Research
+                </div>
+                <h1>Research-Backed<br>Volleyball Analysis</h1>
+                <p class="subtitle">
+                    Transform game statistics into actionable practice recommendations using NCAA Division I research data. 
+                    Get instant insights that actually impact win probability.
+                </p>
+                <div class="hero-cta">
+                    <button class="btn" onclick="scrollToAnalysis()">
+                        <i>📊</i>&nbsp;Start Analysis Now
+                    </button>
+                    <button class="btn btn-secondary" onclick="scrollToBenefits()">
+                        Learn More
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits" id="benefitsSection">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Why StatCoach Volleyball?</h2>
+                <p class="section-subtitle">
+                    Leverage cutting-edge NCAA research to make data-driven coaching decisions that actually win games
+                </p>
+            </div>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">📈</div>
+                    <h3 class="benefit-title">Instant Analysis</h3>
+                    <p class="benefit-description">
+                        Get immediate insights from your game statistics with research-backed recommendations that transform raw data into actionable strategies.
+                    </p>
+                    <a href="#" class="benefit-link" onclick="scrollToAnalysis()">
+                        Real-time insights <i>→</i>
+                    </a>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎯</div>
+                    <h3 class="benefit-title">Practice Focus</h3>
+                    <p class="benefit-description">
+                        Discover which skills to prioritize in practice based on statistical impact. Focus training time on what actually wins games.
+                    </p>
+                    <a href="#" class="benefit-link" onclick="scrollToAnalysis()">
+                        Strategic focus <i>→</i>
+                    </a>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">📊</div>
+                    <h3 class="benefit-title">Track Progress</h3>
+                    <p class="benefit-description">
+                        Monitor team performance trends and measure improvement over time with comprehensive analytics and historical comparisons.
+                    </p>
+                    <a href="#" class="benefit-link" onclick="scrollToAnalysis()">
+                        Performance trends <i>→</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analysis Section -->
+    <section class="analysis" id="analysisSection">
+        <div class="container">
+            <div class="section-header">
+                <div class="hero-badge">
+                    🏐 Game Analysis Tool
+                </div>
+                <h2 class="section-title">Analyze Your Game</h2>
+                <p class="section-subtitle">
+                    Enter your match statistics below for instant research-backed analysis and practice recommendations
+                </p>
+            </div>
+
+            <div class="analysis-container">
+                <form class="analysis-form" id="statsForm">
+                    <div class="form-header">
+                        <h3>Game Statistics</h3>
+                        <p>All fields are optional - enter what data you have available</p>
+                    </div>
+                    
+                    <div class="form-body">
+                        <!-- Match Info Section -->
+                        <div class="form-section">
+                            <div class="section-divider">
+                                <div class="section-icon" style="background: linear-gradient(135deg, #6b7280, #4b5563);">
+                                    ℹ️
+                                </div>
+                                <h4 class="section-title-sm">Match Information</h4>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Opponent</label>
+                                    <input type="text" class="form-input" id="opponent" placeholder="Team name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" class="form-input" id="gameDate">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attack Section -->
+                        <div class="form-section">
+                            <div class="section-divider">
+                                <div class="section-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                                    🏐
+                                </div>
+                                <h4 class="section-title-sm">Attack Statistics</h4>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Total Kills</label>
+                                    <input type="number" class="form-input" id="totalKills" min="0" placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Kill Attempts</label>
+                                    <input type="number" class="form-input" id="killAttempts" min="0" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Serving Section -->
+                        <div class="form-section">
+                            <div class="section-divider">
+                                <div class="section-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                                    🎯
+                                </div>
+                                <h4 class="section-title-sm">Serving Statistics</h4>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Service Aces</label>
+                                    <input type="number" class="form-input" id="serviceAces" min="0" placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Service Errors</label>
+                                    <input type="number" class="form-input" id="serviceErrors" min="0" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Defense Section -->
+                        <div class="form-section">
+                            <div class="section-divider">
+                                <div class="section-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                    🛡️
+                                </div>
+                                <h4 class="section-title-sm">Defense Statistics</h4>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Total Blocks</label>
+                                    <input type="number" class="form-input" id="totalBlocks" min="0" placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Digs</label>
+                                    <input type="number" class="form-input" id="digs" min="0" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Other Section -->
+                        <div class="form-section">
+                            <div class="section-divider">
+                                <div class="section-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                                    🔄
+                                </div>
+                                <h4 class="section-title-sm">Other Statistics</h4>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Reception Errors</label>
+                                    <input type="number" class="form-input" id="receptionErrors" min="0" placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Total Sets Played</label>
+                                    <input type="number" class="form-input" id="totalSets" min="1" max="5" placeholder="3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="form-submit">
+                            <span class="submit-text">📈 Analyze Game Performance</span>
+                            <div class="loading-spinner hidden"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results" id="resultsSection">
+        <div class="container">
+            <div class="section-header">
+                <div class="results-badge">
+                    <i>✅</i>
+                    Analysis Complete
+                </div>
+                <h2 class="section-title">Performance Analysis</h2>
+                <p class="section-subtitle">
+                    Research-backed insights and recommendations based on your game statistics
+                </p>
+            </div>
+            
+            <!-- Game Summary -->
+            <div class="game-summary" id="gameSummary">
+                <!-- Populated by JavaScript -->
+            </div>
+            
+            <!-- Metrics Grid -->
+            <div class="metrics-grid" id="metricsGrid">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- AI Insights -->
+            <div class="insights-card">
+                <div class="insights-header">
+                    <h3>
+                        <i>🧠</i>
+                        AI Coaching Insights
+                    </h3>
+                    <p>Powered by NCAA Division I research data</p>
+                </div>
+                <div class="insights-body">
+                    <div class="insights-content" id="aiInsights">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Account Prompt -->
+    <section class="account-prompt" id="accountPrompt">
+        <div class="container">
+            <h2>Save Your Analysis & Track Progress</h2>
+            <p class="subtitle">
+                Create a free account to save games, track trends, and get enhanced insights
+            </p>
+            
+            <div class="prompt-features">
+                <div class="prompt-feature">
+                    <i>💾</i>
+                    <h3>Save Games</h3>
+                    <p>Never lose your analysis data</p>
+                </div>
+                <div class="prompt-feature">
+                    <i>📊</i>
+                    <h3>Track Trends</h3>
+                    <p>See performance over time</p>
+                </div>
+                <div class="prompt-feature">
+                    <i>👥</i>
+                    <h3>Team Dashboard</h3>
+                    <p>Comprehensive team overview</p>
+                </div>
+            </div>
+            
+            <button class="prompt-cta" onclick="showSignup()">
+                Create Free Account
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 StatCoach Volleyball. Powered by NCAA Division I Research Data.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global state
+        let currentUser = null;
+
+        // Utility functions
+        function scrollToAnalysis() {
+            document.getElementById('analysisSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToBenefits() {
+            document.getElementById('benefitsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showLogin() {
+            alert('Login functionality - redirect to login.html');
+        }
+
+        function showSignup() {
+            alert('Signup functionality - redirect to signup.html');
+        }
+
+        // Form submission handler
+        document.getElementById('statsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('.form-submit');
+            const submitText = submitBtn.querySelector('.submit-text');
+            const loadingSpinner = submitBtn.querySelector('.loading-spinner');
+            
+            submitText.style.display = 'none';
+            loadingSpinner.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            try {
+                // Get form data
+                const formData = new FormData(e.target);
+                const stats = {
+                    opponent: formData.get('opponent') || 'Unknown Opponent',
+                    gameDate: formData.get('gameDate') || new Date().toISOString().split('T')[0],
+                    totalKills: parseInt(formData.get('totalKills')) || 0,
+                    killAttempts: parseInt(formData.get('killAttempts')) || 0,
+                    serviceAces: parseInt(formData.get('serviceAces')) || 0,
+                    serviceErrors: parseInt(formData.get('serviceErrors')) || 0,
+                    receptionErrors: parseInt(formData.get('receptionErrors')) || 0,
+                    totalBlocks: parseInt(formData.get('totalBlocks')) || 0,
+                    digs: parseInt(formData.get('digs')) || 0,
+                    totalSets: parseInt(formData.get('totalSets')) || 1
+                };
+
+                // Simulate processing time
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Calculate metrics
+                const metrics = calculateMetrics(stats);
+                
+                // Get AI insights
+                const insights = await getAIInsights(stats, metrics);
+                
+                // Display results
+                displayResults(stats, metrics, insights);
+                
+                // Show account prompt if not logged in
+                if (!currentUser) {
+                    setTimeout(() => {
+                        document.getElementById('accountPrompt').classList.add('show');
+                    }, 500);
+                }
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                alert('Error analyzing game. Please try again.');
+            } finally {
+                // Reset button
+                submitText.style.display = 'inline';
+                loadingSpinner.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        });
+
+        function calculateMetrics(stats) {
+            const killEfficiency = stats.killAttempts > 0 ? (stats.totalKills / stats.killAttempts * 100) : 0;
+            const acesPerSet = stats.totalSets > 0 ? (stats.serviceAces / stats.totalSets) : 0;
+            const receptionErrorRate = stats.totalSets > 0 ? (stats.receptionErrors / stats.totalSets) : 0;
+            const serviceErrorRate = stats.totalSets > 0 ? (stats.serviceErrors / stats.totalSets) : 0;
+            const blocksPerSet = stats.totalSets > 0 ? (stats.totalBlocks / stats.totalSets) : 0;
+            const digsPerSet = stats.totalSets > 0 ? (stats.digs / stats.totalSets) : 0;
+
+            // Research benchmarks from NCAA Division I data
+            const benchmarks = {
+                kills: { low: 42.8, high: 46.9 }, // Loss vs Win averages
+                aces: { low: 3.93, high: 6.45 },
+                receptionErrors: { low: 3.71, high: 6.17 }, // Lower is better for errors
+                digs: { low: 29.5, high: 31.1 },
+                blocks: { low: 1.58, high: 1.94 }, // Solo blocks from research
+                attempts: { efficient: 96.2, inefficient: 103 } // Lower attempts = more efficient
+            };
+
+            return {
+                killEfficiency: killEfficiency.toFixed(1),
+                acesPerSet: acesPerSet.toFixed(1),
+                blocksPerSet: blocksPerSet.toFixed(1),
+                digsPerSet: digsPerSet.toFixed(1),
+                receptionErrorRate: receptionErrorRate.toFixed(1),
+                serviceErrorRate: serviceErrorRate.toFixed(1),
+                benchmarks: benchmarks
+            };
+        }
+
+        async function getAIInsights(stats, metrics) {
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        stats: stats,
+                        metrics: metrics
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+
+                return data.analysis;
+
+            } catch (error) {
+                console.error('AI Analysis error:', error);
+                
+                // Fallback to basic analysis if API fails
+                return getFallbackAnalysis(stats, metrics);
+            }
+        }
+
+        // Fallback analysis for when API is unavailable
+        function getFallbackAnalysis(stats, metrics) {
+            const insights = [];
+            const acesPerSet = parseFloat(metrics.acesPerSet);
+            const receptionErrors = parseFloat(metrics.receptionErrorRate);
+            const killEff = parseFloat(metrics.killEfficiency);
+            
+            insights.push("**Game Impact Summary**");
+            insights.push("Analysis based on NCAA Division I research data. Your " + killEff + "% kill efficiency shows your attacking precision level.");
+            
+            insights.push("\n**Key Research Findings**");
+            
+            if (acesPerSet >= 2.0) {
+                insights.push("Your " + stats.serviceAces + " service aces were excellent - research shows each ace increases win probability by 33.8%.");
+            } else if (acesPerSet < 1.0) {
+                insights.push("Limited service aces (" + stats.serviceAces + ") - research shows each ace provides +33.8% win probability boost.");
+            }
+            
+            if (receptionErrors >= 2.0) {
+                insights.push("Reception errors (" + stats.receptionErrors + ") significantly impact performance - each error reduces win probability by 24.3%.");
+            } else if (receptionErrors <= 1.0) {
+                insights.push("Strong ball control with " + stats.receptionErrors + " reception errors - avoiding the biggest statistical killer.");
+            }
+            
+            insights.push("\n**Practice Focus**");
+            insights.push("Based on statistical impact: Focus on " + (receptionErrors >= 2.0 ? "serve-receive consistency" : acesPerSet < 1.0 ? "aggressive serving" : "maintaining current strengths"));
+            
+            insights.push("\n*Note: Full AI analysis temporarily unavailable. Basic research insights provided.*");
+            
+            return insights.join('\n');
+        }
+
+        function displayResults(stats, metrics, insights) {
+            // Show results section
+            document.getElementById('resultsSection').classList.add('show');
+            
+            // Populate game summary
+            const gameSummary = document.getElementById('gameSummary');
+            gameSummary.innerHTML = `
+                <div class="summary-info">
+                    <h3>Game Summary</h3>
+                    <p>${stats.opponent} • ${new Date(stats.gameDate).toLocaleDateString()} • ${stats.totalSets} sets</p>
+                </div>
+                <div class="summary-id">
+                    <div class="label">Analysis ID</div>
+                    <div class="value">#${Date.now().toString().slice(-6)}</div>
+                </div>
+            `;
+            
+            // Populate metrics grid
+            const metricsGrid = document.getElementById('metricsGrid');
+            metricsGrid.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-label">Kill Efficiency</span>
+                        <div class="metric-icon">🏐</div>
+                    </div>
+                    <div class="metric-value">${metrics.killEfficiency}%</div>
+                    <div class="metric-detail">${stats.totalKills}/${stats.killAttempts} kills</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-label">Aces Per Set</span>
+                        <div class="metric-icon">🎯</div>
+                    </div>
+                    <div class="metric-value">${metrics.acesPerSet}</div>
+                    <div class="metric-detail">${stats.serviceAces} total aces</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-label">Blocks Per Set</span>
+                        <div class="metric-icon">🛡️</div>
+                    </div>
+                    <div class="metric-value">${metrics.blocksPerSet}</div>
+                    <div class="metric-detail">${stats.totalBlocks} total blocks</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-label">Digs Per Set</span>
+                        <div class="metric-icon">🙌</div>
+                    </div>
+                    <div class="metric-value">${metrics.digsPerSet}</div>
+                    <div class="metric-detail">${stats.digs} total digs</div>
+                </div>
+            `;
+
+            // Populate AI insights
+            const aiInsightsEl = document.getElementById('aiInsights');
+            aiInsightsEl.innerHTML = formatInsights(insights);
+            
+            // Scroll to results
+            setTimeout(() => {
+                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function formatInsights(insights) {
+            return insights
+                .split('\n')
+                .map(line => {
+                    if (line.startsWith('**') && line.endsWith('**')) {
+                        return `<h4>${line.replace(/\*\*/g, '')}</h4>`;
+                    } else if (line.startsWith('•')) {
+                        return `<li>${line.substring(1).trim()}</li>`;
+                    } else if (line.trim() === '') {
+                        return '<br>';
+                    } else {
+                        return `<p>${line}</p>`;
+                    }
+                })
+                .join('');
+        }
+
+        // Set today's date by default
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('gameDate').valueAsDate = new Date();
+        });
+    </script>
+</body>
+</html>
