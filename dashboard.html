@@ -6,6 +6,8 @@
     <title>Dashboard - StatCoach Volleyball</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Import the research analysis module -->
+    <script src="analysis.js"></script>
     <style>
         * {
             margin: 0;
@@ -239,6 +241,7 @@
             align-items: center;
             gap: 0.25rem;
             margin-top: 0.5rem;
+            font-size: 0.75rem;
         }
 
         .trend-positive {
@@ -253,10 +256,39 @@
             color: #6b7280;
         }
 
+        /* Benchmark Comparison */
+        .benchmark-bar {
+            width: 100%;
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 3px;
+            margin-top: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .benchmark-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .benchmark-fill.excellent {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .benchmark-fill.good {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+
+        .benchmark-fill.needs-improvement {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
         /* Content Sections */
         .content-grid {
             display: grid;
-            grid-template-columns: 1fr 300px;
+            grid-template-columns: 1fr 350px;
             gap: 2rem;
             margin-bottom: 2rem;
         }
@@ -357,6 +389,9 @@
             font-weight: 600;
             color: #1a1a1a;
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .insight-item {
@@ -384,6 +419,27 @@
             font-size: 0.875rem;
             color: #1a1a1a;
             line-height: 1.4;
+        }
+
+        .insight-metric {
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        .insight-impact {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .insight-impact.positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
         }
 
         /* Performance Chart */
@@ -485,7 +541,7 @@
             <!-- Dashboard Header -->
             <div class="dashboard-header">
                 <h1 class="dashboard-title">Team Dashboard</h1>
-                <p class="dashboard-subtitle">Track your team's performance and analyze game trends</p>
+                <p class="dashboard-subtitle">Track your team's performance with research-backed analysis</p>
                 
                 <div class="dashboard-actions">
                     <a href="/" class="btn">
@@ -500,63 +556,13 @@
             </div>
 
             <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Season Average - Kill Efficiency</span>
-                        <div class="stat-icon">🏐</div>
-                    </div>
-                    <div class="stat-value" id="avgKillEff">42.1%</div>
-                    <div class="stat-detail">Across 8 games analyzed</div>
-                    <div class="stat-trend trend-positive">
-                        <span>↗</span>
-                        <span>+3.2% from last month</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Season Average - Aces Per Set</span>
-                        <div class="stat-icon">🎯</div>
-                    </div>
-                    <div class="stat-value" id="avgAces">1.8</div>
-                    <div class="stat-detail">Target: 2.0+ per set</div>
-                    <div class="stat-trend trend-neutral">
-                        <span>→</span>
-                        <span>Steady performance</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Season Average - Reception Errors</span>
-                        <div class="stat-icon">⚠️</div>
-                    </div>
-                    <div class="stat-value" id="avgReceptionErrors">2.1</div>
-                    <div class="stat-detail">Per set (lower is better)</div>
-                    <div class="stat-trend trend-negative">
-                        <span>↗</span>
-                        <span>+0.4 from last month</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Season Average - Blocks Per Set</span>
-                        <div class="stat-icon">🛡️</div>
-                    </div>
-                    <div class="stat-value" id="avgBlocks">2.3</div>
-                    <div class="stat-detail">Strong net defense</div>
-                    <div class="stat-trend trend-positive">
-                        <span>↗</span>
-                        <span>+0.7 from last month</span>
-                    </div>
-                </div>
+            <div class="stats-grid" id="seasonStatsGrid">
+                <!-- Stats will be populated by JavaScript -->
             </div>
 
             <!-- Performance Trend Chart -->
             <div class="chart-container">
-                <h3 class="section-title" style="margin-bottom: 1rem;">Performance Trends</h3>
+                <h3 class="section-title" style="margin-bottom: 1rem;">Performance Impact Trends</h3>
                 <canvas id="performanceChart" width="400" height="150"></canvas>
             </div>
 
@@ -566,59 +572,12 @@
                 <div class="games-section">
                     <div class="section-header">
                         <h2 class="section-title">Recent Games</h2>
-                        <span class="stat-detail">8 games analyzed</span>
+                        <span class="stat-detail" id="gamesCount">0 games analyzed</span>
                     </div>
                     <div class="section-content">
-                        <table class="games-table" id="gamesTable">
-                            <thead>
-                                <tr>
-                                    <th>Opponent</th>
-                                    <th>Kill Eff.</th>
-                                    <th>Aces/Set</th>
-                                    <th>Rec. Errors</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Sample Data - will be replaced with real data -->
-                                <tr>
-                                    <td>
-                                        <div class="opponent-info">West Coast University</div>
-                                        <div class="game-date">March 15, 2025</div>
-                                    </td>
-                                    <td class="metric-value">45.2%</td>
-                                    <td class="metric-value">2.3</td>
-                                    <td class="metric-value">1.7</td>
-                                    <td>
-                                        <a href="#" class="action-link">View Analysis</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="opponent-info">Mountain State College</div>
-                                        <div class="game-date">March 12, 2025</div>
-                                    </td>
-                                    <td class="metric-value">38.1%</td>
-                                    <td class="metric-value">1.3</td>
-                                    <td class="metric-value">2.8</td>
-                                    <td>
-                                        <a href="#" class="action-link">View Analysis</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="opponent-info">Central Valley Tech</div>
-                                        <div class="game-date">March 8, 2025</div>
-                                    </td>
-                                    <td class="metric-value">43.7%</td>
-                                    <td class="metric-value">1.9</td>
-                                    <td class="metric-value">2.1</td>
-                                    <td>
-                                        <a href="#" class="action-link">View Analysis</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div id="gamesTableContainer">
+                            <!-- Will be populated or show empty state -->
+                        </div>
                     </div>
                 </div>
 
@@ -626,27 +585,21 @@
                 <div class="sidebar">
                     <!-- Current Focus -->
                     <div class="insights-card">
-                        <h3 class="insights-title">Current Focus Areas</h3>
-                        
-                        <div class="insight-item">
-                            <div class="insight-label">Primary Focus</div>
-                            <div class="insight-value">Reception consistency - errors above target range</div>
-                        </div>
-                        
-                        <div class="insight-item">
-                            <div class="insight-label">Secondary Focus</div>
-                            <div class="insight-value">Serving aggression - increase ace production</div>
-                        </div>
-                        
-                        <div class="insight-item">
-                            <div class="insight-label">Strength to Maintain</div>
-                            <div class="insight-value">Net defense - block production trending up</div>
+                        <h3 class="insights-title">
+                            <span>🎯</span>
+                            Season Priorities
+                        </h3>
+                        <div id="seasonPriorities">
+                            <!-- Auto-generated from analysis -->
                         </div>
                     </div>
 
                     <!-- Research Insights -->
                     <div class="insights-card">
-                        <h3 class="insights-title">Research Insights</h3>
+                        <h3 class="insights-title">
+                            <span>📊</span>
+                            Research Insights
+                        </h3>
                         
                         <div class="insight-item">
                             <div class="insight-label">Biggest Impact</div>
@@ -669,152 +622,373 @@
     </main>
 
     <script>
-        // Initialize Supabase - you'll need to add your actual Supabase URL and key
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        
-        // Uncomment when you have Supabase set up
-        // const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize Supabase
+        const supabase = window.supabase.createClient('https://kanktibzdsfyqolnuhvw.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imthbmt0aWJ6ZHNmeXFvbG51aHZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2ODc1MTMsImV4cCI6MjA3NDI2MzUxM30.ZI1wikG5uLKzcTiibn5-k5ZwBi0LNEE6WnuMc8E1FEA');
+
+        let allGames = [];
+        let seasonAnalysis = null;
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', async function() {
-            // Load user data and games
             await loadUserData();
             await loadGames();
-            createPerformanceChart();
         });
 
         async function loadUserData() {
-            // TODO: Replace with actual Supabase user data loading
-            // const { data: { user } } = await supabase.auth.getUser();
-            // if (user) {
-            //     document.getElementById('userName').textContent = user.user_metadata.coach_name || 'Coach';
-            //     document.getElementById('teamName').textContent = user.user_metadata.team_name || 'Team Name';
-            // }
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    document.getElementById('userName').textContent = user.user_metadata?.coach_name || user.email || 'Coach';
+                    document.getElementById('teamName').textContent = user.user_metadata?.team_name || 'Your Team';
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
         }
 
         async function loadGames() {
-            // TODO: Replace with actual Supabase games loading
-            // const { data: games, error } = await supabase
-            //     .from('games')
-            //     .select('*')
-            //     .order('game_date', { ascending: false });
-            
-            // if (games && games.length > 0) {
-            //     displayGames(games);
-            //     calculateSeasonStats(games);
-            // }
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const { data: games, error } = await supabase
+                    .from('games')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('game_date', { ascending: false });
+                
+                if (error) throw error;
+
+                allGames = games || [];
+                
+                if (allGames.length > 0) {
+                    displayGames(allGames);
+                    calculateSeasonAnalysis(allGames);
+                    createPerformanceChart(allGames);
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading games:', error);
+                showEmptyState();
+            }
         }
 
-        function displayGames(games) {
-            const tbody = document.querySelector('#gamesTable tbody');
-            tbody.innerHTML = '';
-
-            games.forEach(game => {
-                const killEff = game.kill_attempts > 0 ? (game.total_kills / game.kill_attempts * 100).toFixed(1) : '0.0';
-                const acesPerSet = game.total_sets > 0 ? (game.service_aces / game.total_sets).toFixed(1) : '0.0';
-                const errorsPerSet = game.total_sets > 0 ? (game.reception_errors / game.total_sets).toFixed(1) : '0.0';
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>
-                        <div class="opponent-info">${game.opponent}</div>
-                        <div class="game-date">${new Date(game.game_date).toLocaleDateString()}</div>
-                    </td>
-                    <td class="metric-value">${killEff}%</td>
-                    <td class="metric-value">${acesPerSet}</td>
-                    <td class="metric-value">${errorsPerSet}</td>
-                    <td>
-                        <a href="#" class="action-link" onclick="viewGameAnalysis('${game.id}')">View Analysis</a>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function calculateSeasonStats(games) {
+        function calculateSeasonAnalysis(games) {
             if (games.length === 0) return;
 
-            let totalKills = 0, totalAttempts = 0, totalAces = 0, totalSets = 0, totalReceptionErrors = 0, totalBlocks = 0;
+            // Aggregate all game stats
+            let totalKills = 0, totalAttempts = 0, totalErrors = 0;
+            let totalAces = 0, totalServiceErrors = 0;
+            let totalReceptionErrors = 0, totalDigs = 0;
+            let totalSoloBlocks = 0, totalBlockAssists = 0;
+            let totalSets = 0;
 
             games.forEach(game => {
                 totalKills += game.total_kills || 0;
                 totalAttempts += game.kill_attempts || 0;
+                totalErrors += game.attack_errors || 0;
                 totalAces += game.service_aces || 0;
-                totalSets += game.total_sets || 1;
+                totalServiceErrors += game.service_errors || 0;
                 totalReceptionErrors += game.reception_errors || 0;
-                totalBlocks += game.total_blocks || 0;
+                totalDigs += game.digs || 0;
+                totalSoloBlocks += game.solo_blocks || 0;
+                totalBlockAssists += game.block_assists || 0;
+                totalSets += game.total_sets || 3;
             });
 
-            const avgKillEff = totalAttempts > 0 ? (totalKills / totalAttempts * 100).toFixed(1) : '0.0';
-            const avgAces = totalSets > 0 ? (totalAces / totalSets).toFixed(1) : '0.0';
-            const avgReceptionErrors = totalSets > 0 ? (totalReceptionErrors / totalSets).toFixed(1) : '0.0';
-            const avgBlocks = totalSets > 0 ? (totalBlocks / totalSets).toFixed(1) : '0.0';
+            // Calculate averages per game (normalized to 3.5 sets)
+            const avgSetsPerGame = totalSets / games.length;
+            const seasonStats = {
+                totalKills: totalKills / games.length,
+                killAttempts: totalAttempts / games.length,
+                attackErrors: totalErrors / games.length,
+                serviceAces: totalAces / games.length,
+                serviceErrors: totalServiceErrors / games.length,
+                receptionErrors: totalReceptionErrors / games.length,
+                digs: totalDigs / games.length,
+                soloBlocks: totalSoloBlocks / games.length,
+                blockAssists: totalBlockAssists / games.length,
+                totalSets: avgSetsPerGame
+            };
 
-            document.getElementById('avgKillEff').textContent = avgKillEff + '%';
-            document.getElementById('avgAces').textContent = avgAces;
-            document.getElementById('avgReceptionErrors').textContent = avgReceptionErrors;
-            document.getElementById('avgBlocks').textContent = avgBlocks;
+            // Use the analysis module to get research-based insights
+            seasonAnalysis = analyzeGame(seasonStats);
+
+            // Display season stats with research context
+            displaySeasonStats(seasonStats, seasonAnalysis);
+            displaySeasonPriorities(seasonAnalysis);
         }
 
-        function createPerformanceChart() {
+        function displaySeasonStats(stats, analysis) {
+            const grid = document.getElementById('seasonStatsGrid');
+            const normalized = analysis.normalized;
+            const impacts = analysis.impacts;
+
+            // Helper function to determine status
+            function getStatus(metric) {
+                const impact = impacts[metric]?.impact || 0;
+                if (Math.abs(impact) < 3) return 'excellent';
+                if (Math.abs(impact) < 8) return 'good';
+                return 'needs-improvement';
+            }
+
+            // Helper function to get benchmark text
+            function getBenchmarkText(metric) {
+                const data = impacts[metric];
+                if (!data) return '';
+                const winAvg = data.benchmark.toFixed(1);
+                const yourAvg = data.value.toFixed(1);
+                const diff = (data.value - data.benchmark).toFixed(1);
+                const better = data.impact > 0 ? 'above' : 'below';
+                return `${yourAvg} vs winning avg ${winAvg} (${diff > 0 ? '+' : ''}${diff})`;
+            }
+
+            grid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Season Kills (per game)</span>
+                        <div class="stat-icon">🏐</div>
+                    </div>
+                    <div class="stat-value">${normalized.kills.toFixed(1)}</div>
+                    <div class="stat-detail">${getBenchmarkText('kills')}</div>
+                    <div class="stat-trend ${impacts.kills.impact >= 0 ? 'trend-positive' : 'trend-negative'}">
+                        <span>${impacts.kills.impact >= 0 ? '↗' : '↘'}</span>
+                        <span>${impacts.kills.impact >= 0 ? '+' : ''}${impacts.kills.impact.toFixed(1)}% win impact</span>
+                    </div>
+                    <div class="benchmark-bar">
+                        <div class="benchmark-fill ${getStatus('kills')}" style="width: ${Math.min(100, (normalized.kills / RESEARCH_BENCHMARKS.win.kills) * 100)}%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Season Aces (per game)</span>
+                        <div class="stat-icon">🎯</div>
+                    </div>
+                    <div class="stat-value">${normalized.serviceAces.toFixed(1)}</div>
+                    <div class="stat-detail">${getBenchmarkText('serviceAces')}</div>
+                    <div class="stat-trend ${impacts.serviceAces.impact >= 0 ? 'trend-positive' : 'trend-negative'}">
+                        <span>${impacts.serviceAces.impact >= 0 ? '↗' : '↘'}</span>
+                        <span>${impacts.serviceAces.impact >= 0 ? '+' : ''}${impacts.serviceAces.impact.toFixed(1)}% win impact</span>
+                    </div>
+                    <div class="benchmark-bar">
+                        <div class="benchmark-fill ${getStatus('serviceAces')}" style="width: ${Math.min(100, (normalized.serviceAces / RESEARCH_BENCHMARKS.win.serviceAces) * 100)}%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Season Reception Errors</span>
+                        <div class="stat-icon">⚠️</div>
+                    </div>
+                    <div class="stat-value">${normalized.receptionErrors.toFixed(1)}</div>
+                    <div class="stat-detail">${getBenchmarkText('receptionErrors')}</div>
+                    <div class="stat-trend ${impacts.receptionErrors.impact <= 0 ? 'trend-positive' : 'trend-negative'}">
+                        <span>${impacts.receptionErrors.impact <= 0 ? '↗' : '↘'}</span>
+                        <span>${impacts.receptionErrors.impact.toFixed(1)}% win impact</span>
+                    </div>
+                    <div class="benchmark-bar">
+                        <div class="benchmark-fill ${getStatus('receptionErrors')}" style="width: ${Math.max(0, 100 - ((normalized.receptionErrors / RESEARCH_BENCHMARKS.win.receptionErrors) * 50))}%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Season Digs (per game)</span>
+                        <div class="stat-icon">🛡️</div>
+                    </div>
+                    <div class="stat-value">${normalized.digs.toFixed(1)}</div>
+                    <div class="stat-detail">${getBenchmarkText('digs')}</div>
+                    <div class="stat-trend ${impacts.digs.impact >= 0 ? 'trend-positive' : 'trend-negative'}">
+                        <span>${impacts.digs.impact >= 0 ? '↗' : '↘'}</span>
+                        <span>${impacts.digs.impact >= 0 ? '+' : ''}${impacts.digs.impact.toFixed(1)}% win impact</span>
+                    </div>
+                    <div class="benchmark-bar">
+                        <div class="benchmark-fill ${getStatus('digs')}" style="width: ${Math.min(100, (normalized.digs / RESEARCH_BENCHMARKS.win.digs) * 100)}%"></div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('gamesCount').textContent = `${allGames.length} game${allGames.length !== 1 ? 's' : ''} analyzed`;
+        }
+
+        function displaySeasonPriorities(analysis) {
+            const container = document.getElementById('seasonPriorities');
+            const recommendations = analysis.recommendations;
+
+            if (recommendations.weaknesses.length === 0 && recommendations.strengths.length === 0) {
+                container.innerHTML = '<div class="insight-value">No significant priorities - performance is balanced</div>';
+                return;
+            }
+
+            let html = '';
+
+            // Display top 3 weaknesses
+            if (recommendations.weaknesses.length > 0) {
+                recommendations.weaknesses.slice(0, 3).forEach((weakness, index) => {
+                    const metricName = formatMetricName(weakness.metric);
+                    html += `
+                        <div class="insight-item">
+                            <div class="insight-label">Priority ${index + 1}</div>
+                            <div class="insight-value">
+                                <span class="insight-metric">${metricName}</span><br>
+                                ${weakness.value.toFixed(1)} vs winning avg ${weakness.benchmark.toFixed(1)}
+                                <div class="insight-impact">${Math.abs(weakness.impact).toFixed(1)}% reduction</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Display top strength
+            if (recommendations.strengths.length > 0) {
+                const strength = recommendations.strengths[0];
+                const metricName = formatMetricName(strength.metric);
+                html += `
+                    <div class="insight-item">
+                        <div class="insight-label">Key Strength</div>
+                        <div class="insight-value">
+                            <span class="insight-metric">${metricName}</span><br>
+                            ${strength.value.toFixed(1)} vs winning avg ${strength.benchmark.toFixed(1)}
+                            <div class="insight-impact positive">+${strength.impact.toFixed(1)}% boost</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function formatMetricName(metric) {
+            const names = {
+                kills: 'Kills',
+                errors: 'Attack Errors',
+                attempts: 'Attack Attempts',
+                serviceAces: 'Service Aces',
+                serviceErrors: 'Service Errors',
+                receptionErrors: 'Reception Errors',
+                digs: 'Digs',
+                soloBlocks: 'Solo Blocks',
+                blockAssists: 'Block Assists'
+            };
+            return names[metric] || metric;
+        }
+
+        function displayGames(games) {
+            const container = document.getElementById('gamesTableContainer');
+            
+            const tableHTML = `
+                <table class="games-table">
+                    <thead>
+                        <tr>
+                            <th>Opponent</th>
+                            <th>Kill Eff.</th>
+                            <th>Aces/Set</th>
+                            <th>Rec. Errors</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${games.map(game => {
+                            const killEff = game.kill_attempts > 0 ? (game.total_kills / game.kill_attempts * 100).toFixed(1) : '0.0';
+                            const acesPerSet = game.total_sets > 0 ? (game.service_aces / game.total_sets).toFixed(1) : '0.0';
+                            const errorsPerSet = game.total_sets > 0 ? (game.reception_errors / game.total_sets).toFixed(1) : '0.0';
+                            
+                            return `
+                                <tr>
+                                    <td>
+                                        <div class="opponent-info">${game.opponent || 'Unknown Opponent'}</div>
+                                        <div class="game-date">${new Date(game.game_date).toLocaleDateString()}</div>
+                                    </td>
+                                    <td class="metric-value">${killEff}%</td>
+                                    <td class="metric-value">${acesPerSet}</td>
+                                    <td class="metric-value">${errorsPerSet}</td>
+                                    <td>
+                                        <a href="#" class="action-link" onclick="viewGameAnalysis('${game.id}'); return false;">View Analysis</a>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        function createPerformanceChart(games) {
             const ctx = document.getElementById('performanceChart').getContext('2d');
             
-            // Sample data - replace with actual game data
-            const chartData = {
-                labels: ['Game 1', 'Game 2', 'Game 3', 'Game 4', 'Game 5', 'Game 6', 'Game 7', 'Game 8'],
-                datasets: [
-                    {
-                        label: 'Kill Efficiency (%)',
-                        data: [38.2, 42.1, 39.8, 45.2, 41.6, 43.7, 38.1, 45.2],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.4,
-                        fill: false
-                    },
-                    {
-                        label: 'Aces Per Set',
-                        data: [1.3, 1.8, 1.5, 2.3, 1.9, 1.9, 1.3, 2.3],
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        tension: 0.4,
-                        fill: false,
-                        yAxisID: 'y1'
-                    }
-                ]
-            };
+            // Calculate impact scores for each game
+            const chartData = games.slice().reverse().map((game, index) => {
+                const gameStats = {
+                    totalKills: game.total_kills,
+                    killAttempts: game.kill_attempts,
+                    attackErrors: game.attack_errors,
+                    serviceAces: game.service_aces,
+                    serviceErrors: game.service_errors,
+                    receptionErrors: game.reception_errors,
+                    digs: game.digs,
+                    soloBlocks: game.solo_blocks,
+                    blockAssists: game.block_assists,
+                    totalSets: game.total_sets || 3
+                };
+                
+                const analysis = analyzeGame(gameStats);
+                return {
+                    label: `Game ${index + 1}`,
+                    date: new Date(game.game_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                    receptionErrorImpact: analysis.impacts.receptionErrors.impact,
+                    acesImpact: analysis.impacts.serviceAces.impact,
+                    killsImpact: analysis.impacts.kills.impact
+                };
+            });
 
             new Chart(ctx, {
                 type: 'line',
-                data: chartData,
+                data: {
+                    labels: chartData.map(d => d.date),
+                    datasets: [
+                        {
+                            label: 'Kills Impact (%)',
+                            data: chartData.map(d => d.killsImpact),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Aces Impact (%)',
+                            data: chartData.map(d => d.acesImpact),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Reception Errors Impact (%)',
+                            data: chartData.map(d => d.receptionErrorImpact),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        }
+                    ]
+                },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
                         y: {
-                            type: 'linear',
-                            display: true,
-                            position: 'left',
                             beginAtZero: true,
-                            max: 50,
                             title: {
                                 display: true,
-                                text: 'Kill Efficiency (%)'
+                                text: 'Win Probability Impact (%)'
                             }
-                        },
-                        y1: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            beginAtZero: true,
-                            max: 3,
-                            title: {
-                                display: true,
-                                text: 'Aces Per Set'
-                            },
-                            grid: {
-                                drawOnChartArea: false,
-                            },
                         }
                     },
                     plugins: {
@@ -823,6 +997,18 @@
                         },
                         title: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y.toFixed(1) + '%';
+                                    return label;
+                                }
+                            }
                         }
                     },
                     interaction: {
@@ -833,35 +1019,62 @@
             });
         }
 
+        function showEmptyState() {
+            document.getElementById('seasonStatsGrid').innerHTML = `
+                <div class="stat-card" style="grid-column: 1 / -1;">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <h3 class="empty-title">No Games Yet</h3>
+                        <p class="empty-description">Start analyzing games to see your team's performance trends</p>
+                        <a href="/" class="btn">Analyze Your First Game</a>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('gamesTableContainer').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🏐</div>
+                    <h3 class="empty-title">No Games Analyzed</h3>
+                    <p class="empty-description">Your analyzed games will appear here</p>
+                </div>
+            `;
+
+            document.getElementById('seasonPriorities').innerHTML = `
+                <div class="insight-value">No data available yet. Analyze games to see priorities.</div>
+            `;
+        }
+
         function viewGameAnalysis(gameId) {
-            // TODO: Navigate to specific game analysis
+            // TODO: Navigate to specific game analysis or show modal
             alert('Game analysis view - to be implemented');
         }
 
         function exportData() {
             // TODO: Export functionality
+            if (allGames.length === 0) {
+                alert('No games to export');
+                return;
+            }
             alert('Export functionality - to be implemented');
         }
 
         async function handleLogout() {
             try {
-                // TODO: Replace with actual Supabase logout
-                // await supabase.auth.signOut();
-                
-                // Simulate logout
-                alert('Logging out...');
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
                 window.location.href = '/';
             } catch (error) {
                 console.error('Logout error:', error);
+                alert('Error logging out');
             }
         }
 
         // Auth state management
-        // supabase.auth.onAuthStateChange((event, session) => {
-        //     if (event === 'SIGNED_OUT' || !session) {
-        //         window.location.href = '/login.html';
-        //     }
-        // });
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+                window.location.href = '/login.html';
+            }
+        });
     </script>
 </body>
 </html>
