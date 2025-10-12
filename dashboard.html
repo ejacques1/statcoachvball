@@ -521,7 +521,7 @@
     <!-- Header -->
     <header class="header">
         <nav class="nav container">
-            <a href="/" class="logo">
+            <a href="index.html" class="logo">
                 <div class="logo-icon">🏐</div>
                 StatCoach Volleyball
             </a>
@@ -700,18 +700,21 @@
                 totalSets += game.total_sets || 3;
             });
 
-            // Calculate averages per game (normalized to 3.5 sets)
-            const avgSetsPerGame = totalSets / games.length;
+            // Calculate season averages - these are RAW totals divided by number of games
+            // The analysis module will normalize these to 3.5 sets
+            const numGames = games.length;
+            const avgSetsPerGame = totalSets / numGames;
+            
             const seasonStats = {
-                totalKills: totalKills / games.length,
-                killAttempts: totalAttempts / games.length,
-                attackErrors: totalErrors / games.length,
-                serviceAces: totalAces / games.length,
-                serviceErrors: totalServiceErrors / games.length,
-                receptionErrors: totalReceptionErrors / games.length,
-                digs: totalDigs / games.length,
-                soloBlocks: totalSoloBlocks / games.length,
-                blockAssists: totalBlockAssists / games.length,
+                totalKills: totalKills / numGames,
+                killAttempts: totalAttempts / numGames,
+                attackErrors: totalErrors / numGames,
+                serviceAces: totalAces / numGames,
+                serviceErrors: totalServiceErrors / numGames,
+                receptionErrors: totalReceptionErrors / numGames,
+                digs: totalDigs / numGames,
+                soloBlocks: totalSoloBlocks / numGames,
+                blockAssists: totalBlockAssists / numGames,
                 totalSets: avgSetsPerGame
             };
 
