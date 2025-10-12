@@ -359,11 +359,11 @@
     <!-- Header -->
     <header class="header">
         <nav class="nav container">
-            <a href="/" class="logo">
+            <a href="index.html" class="logo">
                 <div class="logo-icon">🏐</div>
                 StatCoach Volleyball
             </a>
-            <a href="/signup.html" class="nav-link">Don't have an account? Sign up</a>
+            <a href="signup.html" class="nav-link">Don't have an account? Sign up</a>
         </nav>
     </header>
 
@@ -427,7 +427,7 @@
                         </form>
 
                         <div class="form-footer">
-                            Don't have an account? <a href="/signup.html">Sign up here</a>
+                            Don't have an account? <a href="signup.html">Sign up here</a>
                         </div>
                     </div>
                 </div>
@@ -438,7 +438,7 @@
                         <h3>Try the Analysis Tool</h3>
                         <p>Test our volleyball analysis without creating an account</p>
                     </div>
-                    <button class="demo-button" onclick="window.location.href='/'">
+                    <button class="demo-button" onclick="window.location.href='index.html'">
                         Go to Demo Analysis Tool
                     </button>
                 </div>
@@ -447,12 +447,8 @@
     </main>
 
     <script>
-        // Initialize Supabase - you'll need to add your actual Supabase URL and key
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        
-        // Uncomment when you have Supabase set up
-        // const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize Supabase
+        const supabase = window.supabase.createClient('https://kanktibzdsfyqolnuhvw.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imthbmt0aWJ6ZHNmeXFvbG51aHZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2ODc1MTMsImV4cCI6MjA3NDI2MzUxM30.ZI1wikG5uLKzcTiibn5-k5ZwBi0LNEE6WnuMc8E1FEA');
 
         // Form handling
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -476,23 +472,20 @@
                     remember: formData.get('remember')
                 };
 
-                // TODO: Replace with actual Supabase login
-                // const { data, error } = await supabase.auth.signInWithPassword({
-                //     email: loginData.email,
-                //     password: loginData.password
-                // });
+                // Supabase login
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: loginData.email,
+                    password: loginData.password
+                });
 
-                // if (error) throw error;
+                if (error) throw error;
 
-                // Simulate API call for now
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                // For demo purposes - simulate successful login
+                // Show success message
                 showAlert('Login successful! Redirecting to dashboard...', 'success');
                 
                 // Redirect after 1 second
                 setTimeout(() => {
-                    window.location.href = '/dashboard.html';
+                    window.location.href = 'dashboard.html';
                 }, 1000);
 
             } catch (error) {
@@ -522,12 +515,12 @@
             }, 5000);
         }
 
-        // Check if user is already logged in (when Supabase is set up)
-        // supabase.auth.onAuthStateChange((event, session) => {
-        //     if (event === 'SIGNED_IN' && session) {
-        //         window.location.href = '/dashboard.html';
-        //     }
-        // });
+        // Check if user is already logged in
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                window.location.href = 'dashboard.html';
+            }
+        });
     </script>
 </body>
 </html>
