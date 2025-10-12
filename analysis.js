@@ -79,11 +79,20 @@ function calculateImpacts(normalizedStats) {
     for (let metric in ODDS_RATIOS) {
         if (normalizedStats[metric] !== undefined && midpoint[metric] !== undefined) {
             const deviation = normalizedStats[metric] - midpoint[metric];
-            const logOddsChange = deviation * Math.log(ODDS_RATIOS[metric]);
             
-            // Convert log odds to approximate percentage points
-            // This is a simplified conversion for interpretability
-            const percentageImpact = logOddsChange * 100 / Math.log(2);
+            // Calculate the cumulative odds ratio for this deviation
+            // For each unit of deviation, multiply/divide by the odds ratio
+            const cumulativeOddsRatio = Math.pow(ODDS_RATIOS[metric], deviation);
+            
+            // Convert odds ratio to percentage point change in win probability
+            // Assuming baseline 50% win probability at benchmark
+            const baselineProb = 0.5;
+            const baselineOdds = baselineProb / (1 - baselineProb); // = 1.0
+            const newOdds = baselineOdds * cumulativeOddsRatio;
+            const newProb = newOdds / (1 + newOdds);
+            
+            // Impact is the change in probability (as percentage points)
+            const percentageImpact = (newProb - baselineProb) * 100;
             
             impacts[metric] = {
                 value: normalizedStats[metric],
