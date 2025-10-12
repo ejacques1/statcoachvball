@@ -869,8 +869,8 @@
                 StatCoach Volleyball
             </div>
             <div class="nav-links">
-                <a href="/login.html" class="nav-link">Login</a>
-                <a href="/signup.html" class="btn">Sign Up</a>
+                <a href="login.html" class="nav-link">Login</a>
+                <a href="signup.html" class="btn">Sign Up</a>
             </div>
         </nav>
     </header>
@@ -1069,7 +1069,7 @@
                         <div class="form-section">
                             <div class="section-divider">
                                 <div class="section-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                                    📥
+                                    🔥
                                 </div>
                                 <h4 class="section-title-sm">Reception Statistics</h4>
                             </div>
@@ -1160,7 +1160,7 @@
                 </div>
             </div>
             
-            <button class="prompt-cta" onclick="window.location.href='/signup.html'">
+            <button class="prompt-cta" onclick="window.location.href='signup.html'">
                 Create Free Account
             </button>
         </div>
@@ -1188,13 +1188,13 @@
             const navLinks = document.querySelector('.nav-links');
             if (currentUser) {
                 navLinks.innerHTML = `
-                    <a href="/dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
                     <button onclick="handleLogout()" class="nav-link">Logout</button>
                 `;
             } else {
                 navLinks.innerHTML = `
-                    <a href="/login.html" class="nav-link">Login</a>
-                    <a href="/signup.html" class="btn">Sign Up</a>
+                    <a href="login.html" class="nav-link">Login</a>
+                    <a href="signup.html" class="btn">Sign Up</a>
                 `;
             }
         }
